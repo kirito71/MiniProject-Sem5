@@ -16,10 +16,11 @@ print(x_train.shape, x_test.shape)
 # GA-SVM
 
 population = GA.initPopulation(110)
+# print(population)
 newPopulation = []
 
 for i in range(40):  # for 40 generations
-    fitnessScores = GA.fitnessALL(x_data, y_data, population)
+    fitnessScores = GA.fitnessALL(x_train, y_train, population)
     zipList = zip(fitnessScores, population)
     zipList = sorted(zipList, reverse=True)
     population = [ele for _, ele in zipList]
@@ -33,6 +34,7 @@ for i in range(40):  # for 40 generations
     while count < 46:
         parent1 = population[count]
         parent2 = population[count + 1]
+        count = count + 2
         if GA.r.randint(0, 100) < 95:  # 95% crossOver rate
             offSpring1, offSpring2 = GA.crossOver(parent1, parent2)
         else:
@@ -43,7 +45,7 @@ for i in range(40):  # for 40 generations
             offSpring1 = GA.mutate(offSpring1)
         if GA.r.randint(0, 100) < 10:  # 10% Mutation rate
             offSpring1 = GA.mutate(offSpring1)
-        
+
         newPopulation.append(offSpring1)
         newPopulation.append(offSpring2)
 

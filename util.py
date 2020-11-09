@@ -62,7 +62,7 @@ def toPhenotype(gene):
     return C, gamma
 
 
-def fitness(x_data, y_data, gene):
+def fitness(x_train, x_test, y_train, y_test, gene):
     selectedFeatures = []
     featureMask = gene[0][16:46]
     count = 0
@@ -72,14 +72,14 @@ def fitness(x_data, y_data, gene):
         count += 1
     if len(selectedFeatures) == 0:
         return 0
-    temp_x = x_data[selectedFeatures]
-    x_train, x_test, y_train, y_test = train_test_split(temp_x, y_data, test_size=0.5, stratify=y_data)
+    x_train, x_test = x_train[selectedFeatures], x_test[selectedFeatures]
     # print(x_train.shape, x_test.shape)
     C, gamma = toPhenotype(gene)
     model = SVC(C=C, gamma=gamma, kernel='rbf')
     model.fit(x_train, y_train.values.ravel())
     yPredict = model.predict(x_test)
     ac = accuracy_score(y_test, yPredict)
+    # print(ac)
     return .7 * ac + .3 / len(selectedFeatures)
 
 
@@ -97,6 +97,7 @@ def initPopulation(length=100):
 
 def fitnessALL(x_data, y_data, population):
     score = []
+    x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=0.5, stratify=y_data)
     for individual in population:
-        score.append(fitness(x_data, y_data, individual))
+        score.append(fitness(x_train, x_test, y_train, y_test, individual))
     return score
