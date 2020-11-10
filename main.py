@@ -10,17 +10,17 @@ for i in range(1, 221):
 x_data = pd.read_csv('DataSet/indianPines_X.csv', usecols=li)
 y_data = pd.read_csv('DataSet/indianPines_Y.csv', usecols=['class'])
 print(x_data.shape, y_data.shape)
-x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=0.4, random_state=1, stratify=y_data)
+x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=0.85, random_state=1, stratify=y_data)
 print(x_train.shape, x_test.shape)
 
 # GA-SVM
 
-population = GA.initPopulation(110)
+population = GA.initPopulation()
 # print(population)
-newPopulation = []
 
 for i in range(40):  # for 40 generations
     fitnessScores = GA.fitnessALL(x_train, y_train, population)
+    print('check1')
     zipList = zip(fitnessScores, population)
     zipList = sorted(zipList, reverse=True)
     population = [ele for _, ele in zipList]
@@ -28,7 +28,7 @@ for i in range(40):  # for 40 generations
     for j in range(5):  # Choosing 5 elites from each population
         newPopulation.append(population[0])
         del population[0]
-
+    print('check2')
     population = population[:46]  # only 46 will be selected in next Population  --> Rank Selection
     count = 0
     while count < 46:
@@ -41,18 +41,23 @@ for i in range(40):  # for 40 generations
             offSpring1, offSpring2 = parent1, parent2
 
         # Mutation
-        if GA.r.randint(0, 100) < 10:  # 10% Mutation rate
+        if offSpring1 is None or offSpring2 is None:
+            print('none', count)
+        if GA.r.randint(0, 100) < 20:  # 20% Mutation rate
             offSpring1 = GA.mutate(offSpring1)
-        if GA.r.randint(0, 100) < 10:  # 10% Mutation rate
-            offSpring1 = GA.mutate(offSpring1)
+        if GA.r.randint(0, 100) < 20:  # 20% Mutation rate
+            offSpring2 = GA.mutate(offSpring2)
 
         newPopulation.append(offSpring1)
         newPopulation.append(offSpring2)
 
+    print('check3')
+    population = newPopulation
+
 # After Genetics
-bestGene = newPopulation[0]
+bestGene = population[0]
 selectedFeatures = []
-featureMask = bestGene[0][16:46]
+featureMask = bestGene[0][16:36]
 count = 0
 for bit in featureMask:
     if bit == '1':
