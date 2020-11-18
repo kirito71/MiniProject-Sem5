@@ -21,14 +21,11 @@ print(x_train.shape, x_test.shape)
 population = GA.initPopulation()
 bestFitness = 0
 
-for i in range(40):  # for 40 generations
+for i in range(50):  # for 50 generations
     print(bestFitness, i)
     fitnessScores = GA.fitnessALL(x_train, y_train, population)
     zipList = zip(fitnessScores, population)
     population = sorted(zipList, reverse=True)
-    # population = [ele for _, ele in zipList]
-    # fitnessScores = [ele for ele, _ in zipList]
-    # fitnessScores = fitnessScores[5:]
     bestFitness = population[0][0] * 100
     newPopulation = []
     for j in range(5):  # Choosing 5 elites from each population
@@ -48,8 +45,6 @@ for i in range(40):  # for 40 generations
             offSpring1, offSpring2 = parent1, parent2
 
         # Mutation
-        if offSpring1 is None or offSpring2 is None:
-            print('none', count)
         if GA.r.randint(0, 100) < 25:  # 25% Mutation rate
             offSpring1 = GA.mutate(offSpring1)
         if GA.r.randint(0, 100) < 25:  # 25% Mutation rate
@@ -73,7 +68,7 @@ for bit in featureMask:
 x_train = x_train[selectedFeatures]
 x_test = x_test[selectedFeatures]
 C, gamma = GA.toPhenotype(bestGene)
-model = SVC(C=C, gamma=gamma, kernel='rbf')
+model = SVC(C=C, gamma=gamma, kernel='rbf', cache_size=2000, decision_function_shape='ovo')
 model.fit(x_train, y_train.values.ravel())
 dump(model, 'trainedModel.joblib')
 yPredict = model.predict(x_test)

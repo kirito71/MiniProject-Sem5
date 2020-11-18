@@ -53,13 +53,14 @@ def crossOver(gene1, gene2):
     return offspring1, offspring2
 
 
-def mutate(child, num_mut_bits=10):
+def mutate(child):
+    num_mut_bits = r.randint(1, 65)
     bits = r.sample(range(66), k=num_mut_bits)
     for bit in bits:
         temp = child[0]
         child[0] = temp[:bit]+invert(child[0][bit])+temp[(bit+1):]
-        if bit >= 16:
-            child[1][bit-16] = r.choice(list(set(range(1, 221))-set(child[1])))
+        # if bit >= 16:
+        #     child[1][bit-16] = r.choice(list(set(range(1, 221))-set(child[1])))
     return child
 
 
@@ -86,12 +87,12 @@ def fitness(x_train, x_test, y_train, y_test, gene):
     x_train, x_test = x_train[selectedFeatures], x_test[selectedFeatures]
     # print(x_train.shape, x_test.shape)
     C, gamma = toPhenotype(gene)
-    model = SVC(C=C, gamma=gamma, kernel='rbf')
+    model = SVC(C=C, gamma=gamma, kernel='rbf', cache_size=2000, decision_function_shape='ovo')
     model.fit(x_train, y_train.values.ravel())
     yPredict = model.predict(x_test)
     ac = accuracy_score(y_test, yPredict)
     # print(ac)
-    return .9 * ac + .1 / len(selectedFeatures)
+    return .8 * ac + .2 / len(selectedFeatures)
 
 
 def initPopulation(length=100):
@@ -108,7 +109,7 @@ def initPopulation(length=100):
 
 def fitnessALL(x_data, y_data, population):
     score = []
-    x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=0.7, random_state=1, stratify=y_data)
+    x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=0.4, random_state=1, stratify=y_data)
     for individual in population:
         score.append(fitness(x_train, x_test, y_train, y_test, individual))
     return score
