@@ -2,6 +2,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
+from joblib import dump
 import util as GA
 
 li = ['X', 'Y']
@@ -10,17 +11,15 @@ for i in range(1, 221):
 x_data = pd.read_csv('DataSet/indianPines_X.csv', usecols=li)
 y_data = pd.read_csv('DataSet/indianPines_Y.csv', usecols=['class'])
 print(x_data.shape, y_data.shape)
-x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=0.85, random_state=1, stratify=y_data)
+x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=0.9, random_state=1, stratify=y_data)
 print(x_train.shape, x_test.shape)
 
 # GA-SVM
 
 population = GA.initPopulation()
-# print(population)
 
 for i in range(40):  # for 40 generations
     fitnessScores = GA.fitnessALL(x_train, y_train, population)
-    print('check1')
     zipList = zip(fitnessScores, population)
     zipList = sorted(zipList, reverse=True)
     population = [ele for _, ele in zipList]
@@ -28,7 +27,6 @@ for i in range(40):  # for 40 generations
     for j in range(5):  # Choosing 5 elites from each population
         newPopulation.append(population[0])
         del population[0]
-    print('check2')
     population = population[:46]  # only 46 will be selected in next Population  --> Rank Selection
     count = 0
     while count < 46:
@@ -51,13 +49,12 @@ for i in range(40):  # for 40 generations
         newPopulation.append(offSpring1)
         newPopulation.append(offSpring2)
 
-    print('check3')
     population = newPopulation
 
 # After Genetics
 bestGene = population[0]
 selectedFeatures = []
-featureMask = bestGene[0][16:36]
+featureMask = bestGene[0][16:46]
 count = 0
 for bit in featureMask:
     if bit == '1':
@@ -68,6 +65,7 @@ x_test = x_test[selectedFeatures]
 C, gamma = GA.toPhenotype(bestGene)
 model = SVC(C=C, gamma=gamma, kernel='rbf')
 model.fit(x_train, y_train.values.ravel())
+dump(model, 'trainedModel.joblib')
 yPredict = model.predict(x_test)
 ac = accuracy_score(y_test, yPredict)
-print(ac)
+print('Overall Accuracy:', ac)
