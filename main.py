@@ -19,22 +19,28 @@ print(x_train.shape, x_test.shape)
 # GA-SVM
 
 population = GA.initPopulation()
+bestFitness = 0
 
 for i in range(40):  # for 40 generations
-    print(i)
+    print(bestFitness, i)
     fitnessScores = GA.fitnessALL(x_train, y_train, population)
     zipList = zip(fitnessScores, population)
-    zipList = sorted(zipList, reverse=True)
-    population = [ele for _, ele in zipList]
+    population = sorted(zipList, reverse=True)
+    # population = [ele for _, ele in zipList]
+    # fitnessScores = [ele for ele, _ in zipList]
+    # fitnessScores = fitnessScores[5:]
+    bestFitness = population[0][0] * 100
     newPopulation = []
     for j in range(5):  # Choosing 5 elites from each population
-        newPopulation.append(population[0])
+        newPopulation.append(population[0][1])
         del population[0]
-    population = population[:46]  # only 46 will be selected in next Population  --> Rank Selection
+
     count = 0
     while count < 46:
-        parent1 = population[count]
-        parent2 = population[count + 1]
+        tournament = GA.r.sample(population, k=6)  # tournament selection
+        tournament = sorted(tournament, reverse=True)
+        parent1 = tournament[0][1]
+        parent2 = tournament[1][1]
         count = count + 2
         if GA.r.randint(0, 100) < 95:  # 95% crossOver rate
             offSpring1, offSpring2 = GA.crossOver(parent1, parent2)
@@ -44,9 +50,9 @@ for i in range(40):  # for 40 generations
         # Mutation
         if offSpring1 is None or offSpring2 is None:
             print('none', count)
-        if GA.r.randint(0, 100) < 20:  # 20% Mutation rate
+        if GA.r.randint(0, 100) < 25:  # 25% Mutation rate
             offSpring1 = GA.mutate(offSpring1)
-        if GA.r.randint(0, 100) < 20:  # 20% Mutation rate
+        if GA.r.randint(0, 100) < 25:  # 25% Mutation rate
             offSpring2 = GA.mutate(offSpring2)
 
         newPopulation.append(offSpring1)
@@ -58,7 +64,7 @@ for i in range(40):  # for 40 generations
 print('After Genetics')
 bestGene = population[0]
 selectedFeatures = []
-featureMask = bestGene[0][16:46]
+featureMask = bestGene[0][16:66]
 count = 0
 for bit in featureMask:
     if bit == '1':
@@ -73,4 +79,4 @@ dump(model, 'trainedModel.joblib')
 yPredict = model.predict(x_test)
 ac = accuracy_score(y_test, yPredict)
 print('Overall Accuracy:', ac)
-print('Runtime:', time.time()-startTime)
+print('Runtime:', time.time() - startTime)
