@@ -61,13 +61,13 @@ def mutate(child, num_mut_bits=4):
     return child
 
 
-def toPhenotype(gene):
+def toPhenotype(gene, cMax=130, cMin=80, gammaMax=0.8, gammaMin=0.2):
     C = gene[0][:8]
     gamma = gene[0][8:16]
     C = int(C, 2)
     gamma = int(gamma, 2)
-    C = 80 + ((130-80)/255)*C
-    gamma = 0.2 + ((0.8 - 0.2) / 255) * gamma
+    C = cMin + ((cMax-cMin)/255)*C
+    gamma = gammaMin + ((gammaMax - gammaMin) / 255) * gamma
     return C, gamma
 
 
