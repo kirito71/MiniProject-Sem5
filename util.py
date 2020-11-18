@@ -61,7 +61,7 @@ def mutate(child, num_mut_bits=4):
     return child
 
 
-def toPhenotype(gene, cMax=130, cMin=80, gammaMax=0.8, gammaMin=0.2):
+def toPhenotype(gene, cMax=10010, cMin=9990, gammaMax=0.0000000015, gammaMin=0.0000000005):
     C = gene[0][:8]
     gamma = gene[0][8:16]
     C = int(C, 2)
@@ -89,7 +89,7 @@ def fitness(x_train, x_test, y_train, y_test, gene):
     yPredict = model.predict(x_test)
     ac = accuracy_score(y_test, yPredict)
     # print(ac)
-    return .7 * ac + .3 / len(selectedFeatures)
+    return .9 * ac + .1 / len(selectedFeatures)
 
 
 def initPopulation(length=100):

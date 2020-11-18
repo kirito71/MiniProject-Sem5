@@ -4,7 +4,9 @@ from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
 from joblib import dump
 import util as GA
+import time
 
+startTime = time.time()
 li = ['X', 'Y']
 for i in range(1, 221):
     li.append(str(i))
@@ -19,6 +21,7 @@ print(x_train.shape, x_test.shape)
 population = GA.initPopulation()
 
 for i in range(40):  # for 40 generations
+    print(i)
     fitnessScores = GA.fitnessALL(x_train, y_train, population)
     zipList = zip(fitnessScores, population)
     zipList = sorted(zipList, reverse=True)
@@ -52,6 +55,7 @@ for i in range(40):  # for 40 generations
     population = newPopulation
 
 # After Genetics
+print('After Genetics')
 bestGene = population[0]
 selectedFeatures = []
 featureMask = bestGene[0][16:46]
@@ -69,3 +73,4 @@ dump(model, 'trainedModel.joblib')
 yPredict = model.predict(x_test)
 ac = accuracy_score(y_test, yPredict)
 print('Overall Accuracy:', ac)
+print('Runtime:', time.time()-startTime)
