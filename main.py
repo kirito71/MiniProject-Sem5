@@ -13,7 +13,7 @@ for i in range(1, 221):
 x_data = pd.read_csv('DataSet/indianPines_X.csv', usecols=li)
 y_data = pd.read_csv('DataSet/indianPines_Y.csv', usecols=['class'])
 print(x_data.shape, y_data.shape)
-x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=0.9, random_state=1, stratify=y_data)
+x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=0.9, stratify=y_data)
 print(x_train.shape, x_test.shape)
 
 # GA-SVM
@@ -33,11 +33,11 @@ for i in range(50):  # for 50 generations
         del population[0]
 
     count = 0
+    population = population[:20]    # Rank Selection
     while count < 46:
-        tournament = GA.r.sample(population, k=6)  # tournament selection
-        tournament = sorted(tournament, reverse=True)
-        parent1 = tournament[0][1]
-        parent2 = tournament[1][1]
+        parents = GA.r.sample(population, k=2)
+        parent1 = parents[0][1]
+        parent2 = parents[1][1]
         count = count + 2
         if GA.r.randint(0, 100) < 95:  # 95% crossOver rate
             offSpring1, offSpring2 = GA.crossOver(parent1, parent2)
