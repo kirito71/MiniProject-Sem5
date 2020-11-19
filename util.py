@@ -54,13 +54,10 @@ def crossOver(gene1, gene2):
 
 
 def mutate(child):
-    num_mut_bits = r.randint(1, 65)
-    bits = r.sample(range(66), k=num_mut_bits)
+    bits = r.sample(range(66), k=r.randint(1, 65))
     for bit in bits:
         temp = child[0]
         child[0] = temp[:bit]+invert(child[0][bit])+temp[(bit+1):]
-        # if bit >= 16:
-        #     child[1][bit-16] = r.choice(list(set(range(1, 221))-set(child[1])))
     return child
 
 

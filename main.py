@@ -70,7 +70,7 @@ x_test = x_test[selectedFeatures]
 C, gamma = GA.toPhenotype(bestGene)
 model = SVC(C=C, gamma=gamma, kernel='rbf', cache_size=2000, decision_function_shape='ovo')
 model.fit(x_train, y_train.values.ravel())
-dump(model, 'trainedModel.joblib')
+dump(model, 'trainedGaSvm.joblib')
 yPredict = model.predict(x_test)
 ac = accuracy_score(y_test, yPredict)
 print('Overall Accuracy:', ac)
