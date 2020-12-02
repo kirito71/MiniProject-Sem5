@@ -2,7 +2,6 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
-from joblib import dump
 
 li = ['X', 'Y']
 for i in range(1, 221):
@@ -13,7 +12,6 @@ print(x_data.shape, y_data.shape)
 x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=0.9, random_state=1, stratify=y_data)
 model = SVC(C=1e+4, gamma=1e-9, random_state=1, kernel='rbf', cache_size=2000, decision_function_shape='ovo')
 model.fit(x_train, y_train.values.ravel())
-dump(model, 'trainedSvm.joblib')
 yPredict = model.predict(x_test)
 ac = accuracy_score(y_test, yPredict)
 print('Overall Accuracy:', ac)
